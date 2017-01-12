@@ -10,20 +10,19 @@ Criswell
 
 Criswell is a library for Erlang that implements the idea of
 [futures](https://en.wikipedia.org/wiki/Futures_and_promises).  A future is a
-promise that at some point in the (hopefully) near future, a value will be
-available to a long-running operation.
+promise that at some point in the (hopefully) near future, a result will be
+available to a potentially long-running operation.
 
 Build
 -----
-This library is written for and tested against OTP 19+. It may or may not work with
-earlier OTP releases.
+This library is written for and tested against OTP 19+. It may or may not work
+with earlier OTP releases.
 
      rebar3 compile
 
 API
 ---
-The API is very simple. All of the functions are in the `criswell` module. It has
-three functions exported. 
+The API is very simple. All of the functions are in the `criswell` module. 
 
 ### promise/1 ###
 This function takes a single argument, a function or an MFA tuple. It gets a
@@ -39,20 +38,33 @@ structure.
 ### value/1 ###
 This function takes a promise tuple and gets the associated value if it exists
 yet.  On success an `{ok, Term}` tuple will be returned. Errors might include:
-`not_found`, `not_computed` if the promise has not finished evaluation, or
-`timeout` if the timeout value is exceeded.
+`{error, not_found}`, `{error, timeout}` if the timeout value is exceeded, or
+an arbitrary `{error, Reason}` tuple. 
+
+Results should be returned with an `{ok, Result}` result tuple. 
+
+**NOTE**: Although we attempt to deal with error tuples separately, it's
+possible that an error might be returned inside of a result tuple.
+
+### await/1 ###
+This function waits for a promise to be fulfilled, either by an error tuple or
+a result tuple.  Although the Erlang scheduler is hinted that it can start
+another job, it's possible this call may cause a schedule to block until the
+promise times out or returns a value.
+
+If you want a guaranteed non-blocking value check, use `value/1`.
 
 Example
 -------
-```shell
+```
 $ rebar3 shell
 ===> Verifying dependencies...
 ===> Compiling criswell
 ===> Getting log of git dependency failed in /Users/mallen/github/mrallen1/criswell. Falling back to version 0.0.0
 Erlang/OTP 19 [erts-8.1] [source] [64-bit] [smp:4:4] [async-threads:0] [kernel-poll:false] [dtrace]
+Eshell V8.1  (abort with ^G)
 ```
 ```erlang
-Eshell V8.1  (abort with ^G)
 1> application:start(criswell).
 ok
 2> F = fun() -> 2+2 end.

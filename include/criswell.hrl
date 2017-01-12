@@ -7,3 +7,4 @@
     result = not_computed :: term()
 }).
 
+-type promise() :: {promise, Ref :: reference()}.
