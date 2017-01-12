@@ -1,0 +1,7 @@
+{application, criswell, [ 
+    {description, "A library that implements futures for Erlang."},
+    {vsn, git},
+    {modules, []},
+    {registered, [criswell_sup]},
+    {mod, {criswell_app, []}}
+]}.
