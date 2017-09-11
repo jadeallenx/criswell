@@ -3,5 +3,6 @@
     {vsn, git},
     {modules, []},
     {registered, [criswell_sup]},
-    {mod, {criswell_app, []}}
+    {mod, {criswell_app, []}},
+    {applications, [kernel,stdlib]}
 ]}.
